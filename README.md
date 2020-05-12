@@ -1,5 +1,7 @@
 # bfexec
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/97d726aca2da45709e8ec6c2375ecc44)](https://www.codacy.com/manual/anishjewalikar/bfexec?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=NightShade256/bfexec&amp;utm_campaign=Badge_Grade)
+
 A simple BrainF**k interpreter written in Python.
 
 ## Installation
