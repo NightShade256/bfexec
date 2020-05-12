@@ -8,10 +8,10 @@ The preferred way to install bfexec is through pip
 
 `pip install bfexec`
 
-There is not going to be any compiled documentation for this.
+There is not going to be any compiled documentation for this.  
 Instead please go through the source docstrings.
 
-There are few BF programs in this repository un /examples (THEY ARE NOT MADE BY ME! ALL CREDIT TO THE CREATORS WHERE IT IS DUE!)
+There are few BF programs in this repository in `/examples` (THEY ARE NOT MADE BY ME! ALL CREDIT TO THE CREATORS WHERE IT IS DUE!)
 that you can run in my interpreter.
 
 ## Usage
