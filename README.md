@@ -43,6 +43,14 @@ pass a StringIO instance or a File Object.
 
 If you want to early exit a BF script that is running just, `Ctrl + C` (Keyboard Interrupt).
 
+The interpreter actively optimizes for scan and clear loops.
+But still the interpreter is quite SLOW.
+The hanoi tower and mandelbrot set examples take excruciatingly long to finish.
+This is in part due to Python itself being a interpreted language, and that
+the interpreter doesn't optimize for other constructs.
+
+I am trying to implement optimization for other constructs hence look out for that update!
+
 ## Contributing
 
 Just open a pull request.
