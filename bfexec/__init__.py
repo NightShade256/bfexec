@@ -6,6 +6,13 @@ for scan and clear loops.
 
 from .bf import *
 
+__all__ = [
+    "BFInterpreter",
+    "BFError",
+    "BracketMatchError",
+    "RunTimeError"
+]
+
 __author__ = "Anish Jewalikar"
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 __license__ = "MIT"

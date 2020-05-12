@@ -229,7 +229,7 @@ class BFInterpreter:
 
             if func():
                 func()
-            
+
             self.program_pointer += 1
 
         end = time.perf_counter()

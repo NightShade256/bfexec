@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
       name="bfexec",
-      version="1.0.0",
+      version="1.0.2",
       description="A simple BrainF**k interpreter written in Python.",
       license="MIT",
       author="Anish Jewalikar",
