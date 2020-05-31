@@ -28,6 +28,7 @@ RZL = re.compile(r"(\[-\])|(\[\+\])")
 RSLR = re.compile(r"(\[>\])")
 RSLL = re.compile(r"(\[<\])")
 
+
 class BFError(Exception):
     """Base exception for all the other exceptions."""
     pass
@@ -85,6 +86,7 @@ def fetch_bracket_map(code: str) -> tuple:
 
     return bracket_map
 
+
 def optimize_code(code: str) -> str:
     """Optimizes the code a little bit."""
 
@@ -93,10 +95,12 @@ def optimize_code(code: str) -> str:
     optimized = RSLL.sub("L", optimized)
     return optimized
 
+
 def build_code(code: str):
     cleaned_code = RBF.sub("", code)
     optimized_code = optimize_code(cleaned_code)
     return optimized_code
+
 
 class BFInterpreter:
     """A simple BrainF**k interpreter.
@@ -179,24 +183,24 @@ class BFInterpreter:
                 self.program_pointer = self.inv_map[self.program_pointer]
             except KeyError as e:
                 raise RunTimeError(str(e))
-    
+
     def zero_loop(self) -> None:
         """Sets the cell under the pointer to 0."""
         self.tape[self.pointer] = 0
-    
+
     def scan_loop_left(self) -> None:
         """Runs a scan loop to the left."""
         while self.tape[self.pointer] != 0:
             if self.pointer == 0:
                 raise RunTimeError("[] Index out of range.")
-            self.pointer -=1
-    
+            self.pointer -= 1
+
     def scan_loop_right(self) -> None:
         """Runs a scan loop to the right."""
         while self.tape[self.pointer] != 0:
             if self.pointer == 29999:
                 raise RunTimeError("[] Index out of range.")
-            self.pointer +=1
+            self.pointer += 1
 
     def run(self, disp_time: bool = True) -> float:
         """Interpret the BF code.
@@ -265,6 +269,7 @@ def main():
         interp.run()
     except KeyboardInterrupt:
         print("^C Keyboard Interrupt encountered. Exiting...")
+
 
 if __name__ == "__main__":
     main()
