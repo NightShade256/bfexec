@@ -53,6 +53,12 @@ the interpreter doesn't optimize for other constructs.
 
 I am trying to implement optimization for other constructs hence look out for that update!
 
+## Changelog
+
+1. Update `setup.py` metadata, now you can correctly import the package in your project.
+
+2. Format the project with `autopep8`
+
 ## Contributing
 
 Just open a pull request.
