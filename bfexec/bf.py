@@ -93,7 +93,8 @@ class BFInterpreter:
 
     Raises
     ------
-    BracketMismatch : If there is a mismatch of square brackets in the Brainf**k code.
+    BracketMismatch
+        If there is a mismatch of square brackets in the Brainf**k code.
     """
 
     def __init__(self, code: str, stdin: TextIO, stdout: TextIO) -> None:
@@ -198,7 +199,8 @@ class BFInterpreter:
 
         Raises
         ------
-        BFRuntimeError : If there is a runtime error.
+        BFRuntimeError
+            If there is a runtime error.
         """
 
         start = time.perf_counter()

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bfexec"
-version = "2.0.1"
+version = "2.0.2"
 description = "A simple BrainF**k interpreter written in Python."
 authors = ["Anish Jewalikar <anishjewalikar@gmail.com>"]
 maintainers = ["Anish Jewalikar <anishjewalikar@gmail.com>"]

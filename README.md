@@ -6,19 +6,13 @@ A simple BrainF**k interpreter written in Python.
 
 ## Installation
 
-The preferred way to install bfexec is through pip
+The preferred way to install bfexec is through `pip`.
 
 `pip install bfexec`
 
-There is going to be compiled documentation for this in the near future.
-Instead please go through the source docstrings.
-
-There are few BF programs in this repository in `/examples` (THEY ARE NOT MADE BY ME! ALL CREDIT TO THE CREATORS WHERE IT IS DUE!)
-that you can run in my interpreter.
-
 ## Usage
 
-You can use bfexec through the command line (assuming your Python Scripts folder is in PATH)
+You can use bfexec through the command line (assuming your Python Scripts folder is in PATH).
 `bf <filename here>`
 
 Please only use files with `.bf` extension.
@@ -37,28 +31,19 @@ interp = bfexec.BFInterpreter(code, sys.stdin, sys.stdout)
 interp.run()
 ```
 
-Instead of passing `sys.stdin` and `sys.stdout` to the BFInterpreter constructor, you can also
-pass a StringIO instance or a File Object.
+Please see the documentation for more.
 
-If you want to early exit a BF script that is running just, `Ctrl + C` (Keyboard Interrupt).
+You can find example BrainF**k programs in the `examples/` subdirectory.
+All the credit for making the above mentioned programs go to there respective authors.
 
-The interpreter actively optimizes for scan and clear loops.
-But still the interpreter is quite SLOW.
-The hanoi tower and mandelbrot set examples take excruciatingly long to finish.
-This is in part due to Python itself being a interpreted language, and that
-the interpreter doesn't optimize for other constructs.
-
-I am trying to implement optimization for other constructs hence look out for that update!
+This interpreter is quite slow. You may notice that by running the Hanoi and Mandelbrot Set programs.
+This is because the interpreter does no optimizations other than scan and clear loops.
 
 ## Changelog
 
-v2.0.0
+v2.0.2
 
-1. Switch to `poetry` for easier build and publish workflow.
-
-2. Fix a critical bug.
-
-3. Now you have to use `bf` to run files in the console.
+1. Added documentation through ReadTheDocs.
 
 ## Contributing
 
