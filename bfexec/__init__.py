@@ -10,5 +10,5 @@ from .errors import BFException, BracketMismatch, BFRuntimeException
 __all__ = ["BFInterpreter", "BFException", "BracketMismatch", "BFRuntimeException"]
 
 __author__ = "Anish Jewalikar"
-__version__ = "2.0.2"
+__version__ = "2.0.3"
 __license__ = "MIT"

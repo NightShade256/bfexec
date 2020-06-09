@@ -41,9 +41,9 @@ This is because the interpreter does no optimizations other than scan and clear 
 
 ## Changelog
 
-v2.0.2
+v2.0.3
 
-1. Added documentation through ReadTheDocs.
+1. Remove unused import.
 
 ## Contributing
 

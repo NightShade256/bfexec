@@ -1,6 +1,5 @@
 import re
 import time
-from io import StringIO
 from typing import TextIO
 
 from .errors import BFRuntimeException, BracketMismatch
