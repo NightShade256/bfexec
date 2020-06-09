@@ -10,7 +10,7 @@ The preferred way to install bfexec is through pip
 
 `pip install bfexec`
 
-There is not going to be any compiled documentation for this.  
+There is going to be compiled documentation for this in the near future.
 Instead please go through the source docstrings.
 
 There are few BF programs in this repository in `/examples` (THEY ARE NOT MADE BY ME! ALL CREDIT TO THE CREATORS WHERE IT IS DUE!)
@@ -18,11 +18,8 @@ that you can run in my interpreter.
 
 ## Usage
 
-You can use bfexec through the command line (assuming your Python Scripts folder is in PATH and Python interpreter
-is set to open `.py` files)
-(ONLY USE CMD on Windows! DO NOT USE POWERSHELL!)
-
-`bf.py <filename here>`
+You can use bfexec through the command line (assuming your Python Scripts folder is in PATH)
+`bf <filename here>`
 
 Please only use files with `.bf` extension.
 
@@ -55,9 +52,13 @@ I am trying to implement optimization for other constructs hence look out for th
 
 ## Changelog
 
-1. Update `setup.py` metadata, now you can correctly import the package in your project.
+v2.0.0
 
-2. Format the project with `autopep8`
+1. Switch to `poetry` for easier build and publish workflow.
+
+2. Fix a critical bug.
+
+3. Now you have to use `bf` to run files in the console.
 
 ## Contributing
 
