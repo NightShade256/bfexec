@@ -1,9 +1,9 @@
 import re
 import time
 from io import StringIO
+from typing import TextIO
 
-from .errors import BracketMismatch, BFRuntimeException
-
+from .errors import BFRuntimeException, BracketMismatch
 
 __all__ = ["BFInterpreter"]
 
@@ -86,13 +86,17 @@ class BFInterpreter:
     ---------
     code : str
         The BrainF**k code that is to be executed.
-    stdin : StringIO
-        The input stream, can be a file can be sys.stdin
-    stdout : StringIO
-        The output stream, can be a file can be sys.stdout
+    stdin : TextIO
+        The input stream, this can be a file or ``sys.stdin``.
+    stdout : TextIO
+        The output stream, this can be a file or ``sys.stdout``.
+
+    Raises
+    ------
+    BracketMismatch : If there is a mismatch of square brackets in the Brainf**k code.
     """
 
-    def __init__(self, code: str, stdin: StringIO, stdout: StringIO) -> None:
+    def __init__(self, code: str, stdin: TextIO, stdout: TextIO) -> None:
         self.tape: list = [0 for _ in range(30000)]
         self.code = build_code(code)
         self.program_pointer = 0
@@ -194,8 +198,9 @@ class BFInterpreter:
 
         Raises
         ------
-        RunTimeError : If there is a runtime error.
+        BFRuntimeError : If there is a runtime error.
         """
+
         start = time.perf_counter()
 
         while True:
