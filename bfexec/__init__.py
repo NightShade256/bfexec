@@ -1,14 +1,11 @@
-"""A BrainF**k interpreter written in Python.
+from .compiler import *
+from .errors import *
+from .instructions import *
+from .vm import *
 
-It is a basic interpreter which tries to optimize
-for scan and clear loops.
-"""
+__all__ = compiler.__all__ + instructions.__all__ + errors.__all__ + vm.__all__
 
-from .bf import BFInterpreter
-from .errors import BFException, BracketMismatch, BFRuntimeException
-
-__all__ = ["BFInterpreter", "BFException", "BracketMismatch", "BFRuntimeException"]
 
 __author__ = "Anish Jewalikar"
-__version__ = "2.0.3"
+__version__ = "3.0.0"
 __license__ = "MIT"

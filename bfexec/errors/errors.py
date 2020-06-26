@@ -3,7 +3,6 @@ __all__ = ["BFException", "BracketMismatch", "BFRuntimeException"]
 
 class BFException(Exception):
     """Base exception class for bfexec.
-
     This can be caught to handle any exception thrown from this library."""
 
     pass
@@ -11,7 +10,6 @@ class BFException(Exception):
 
 class BracketMismatch(BFException):
     """Exception that is thrown when there is a mismatch in the square brackets.
-
     Attributes
     ----------
     index : int
