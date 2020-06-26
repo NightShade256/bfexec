@@ -47,14 +47,9 @@ dropping off the performance.
 
 ## Changelog
 
-v3.0.0
+v3.0.1
 
-1. Massively overhaul backend code. The interpreter now collapses repeating instructions and compiles them to special format.
-   This format can then be executed by a VM that is present in the package that should lead to some performance boosts for larger
-   programs. Smaller programs may not benefit at all from this change or may even take longer to execute due to the compile time
-   overhead.
-
-2. Change the library interface. This is a breaking change.
+1. Urgent bug fix.
 
 ## Contributing
 

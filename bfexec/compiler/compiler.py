@@ -99,16 +99,16 @@ class Compiler:
                     instruction_list[count + 1].tp == InsType.DECREMENT
                     and instruction_list[count + 2] == InsType.JUMP_UNLESS_ZERO
                 ):
-                    instruction_list[count] == Instruction(InsType.CLEAR_LOOP, 1)
+                    instruction_list[count] = Instruction(InsType.CLEAR_LOOP, 1)
                 elif (
                     instruction_list[count + 1].tp == InsType.MLEFT
                     and instruction_list[count + 2] == InsType.JUMP_UNLESS_ZERO
                 ):
-                    instruction_list[count] == Instruction(InsType.SCAN_LOOP_L, 1)
+                    instruction_list[count] = Instruction(InsType.SCAN_LOOP_L, 1)
                 elif (
                     instruction_list[count + 1].tp == InsType.MRIGHT
                     and instruction_list[count + 2] == InsType.JUMP_UNLESS_ZERO
                 ):
-                    instruction_list[count] == Instruction(InsType.SCAN_LOOP_R, 1)
+                    instruction_list[count] = Instruction(InsType.SCAN_LOOP_R, 1)
 
         return instruction_list
