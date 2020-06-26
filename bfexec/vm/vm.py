@@ -92,12 +92,12 @@ class BFInterpreter:
                 self.cells[self.dp] = 0
             elif instruction.tp == InsType.SCAN_LOOP_L:
                 while self.cells[self.dp] != 0:
-                    if self.dp == 0:
+                    if self.dp - 1 < 0:
                         raise BFRuntimeException("[]index out of range")
                     self.dp -= 1
             elif instruction.tp == InsType.SCAN_LOOP_R:
                 while self.cells[self.dp] != 0:
-                    if self.dp == 29999:
+                    if self.dp + 1 > 29999:
                         raise BFRuntimeException("[]index out of range")
                     self.dp += 1
 

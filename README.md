@@ -47,9 +47,9 @@ dropping off the performance.
 
 ## Changelog
 
-v3.0.1
+v3.0.2
 
-1. Urgent bug fix.
+1. Bug Fix. (This bug was preventing the interpreter to do full optimization to the code.)
 
 ## Contributing
 
