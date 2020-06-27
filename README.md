@@ -47,9 +47,10 @@ dropping off the performance.
 
 ## Changelog
 
-v3.0.2
+v3.0.3
 
-1. Bug Fix. (This bug was preventing the interpreter to do full optimization to the code.)
+1. Added Multiply Loop optimization support. Now it takes the Towers of Hanoi example only ~3.5 minutes to finish!
+   Speed in other programs is also greatly improved!
 
 ## Contributing
 

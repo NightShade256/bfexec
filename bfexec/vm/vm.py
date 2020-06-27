@@ -91,15 +91,20 @@ class BFInterpreter:
             elif instruction.tp == InsType.CLEAR_LOOP:
                 self.cells[self.dp] = 0
             elif instruction.tp == InsType.SCAN_LOOP_L:
-                while self.cells[self.dp] != 0:
-                    if self.dp - 1 < 0:
-                        raise BFRuntimeException("[]index out of range")
-                    self.dp -= 1
+                index = self.cells.rfind(0, 0, self.dp + 1)
+                if index == -1:
+                    raise BFRuntimeException("[]index out of range")
+                self.dp = index
             elif instruction.tp == InsType.SCAN_LOOP_R:
-                while self.cells[self.dp] != 0:
-                    if self.dp + 1 > 29999:
-                        raise BFRuntimeException("[]index out of range")
-                    self.dp += 1
+                index = self.cells.find(0, self.dp, 30000)
+                if index == -1:
+                    raise BFRuntimeException("[]index out of range")
+                self.dp = index
+            elif instruction.tp == InsType.MULT_LOOP:
+                val = self.cells[self.dp + instruction.offset]
+                self.cells[self.dp + instruction.offset] = (
+                    (val & 0xFF) + (self.cells[self.dp] * instruction.value)
+                ) % 0x100
 
             self.ip += 1
 
