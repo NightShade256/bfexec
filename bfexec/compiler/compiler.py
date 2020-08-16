@@ -1,7 +1,8 @@
 import re
+import typing
 
 from bfexec.errors import BracketMismatch
-from bfexec.instructions import Instruction, InsType
+from bfexec.instructions import Instruction, InstructionType
 
 RBF = re.compile(r"[^\+\-<>.,\[\]]")
 
@@ -28,9 +29,8 @@ class Compiler:
     def __init__(self, program: str) -> None:
         # Compiler state variables.
         self.program = program
-        self.instructions = []
+        self.instructions: typing.List[Instruction] = []
         self.position = 0
-        self.stack = []
 
         self.cleanup_code()
         self.program_len = len(self.program)
@@ -42,7 +42,7 @@ class Compiler:
         self.program = RSLR.sub("R", self.program)
         self.program = RSLL.sub("L", self.program)
 
-    def compile_code(self) -> list:
+    def compile_code(self) -> typing.List[Instruction]:
         """Compile the code into instructions.
 
         Returns
@@ -50,50 +50,57 @@ class Compiler:
         list
             A list of instructions that can be interpreted by the VM.
         """
+        if self.program.count("[") != self.program.count("]"):
+            if self.program.count("[") > self.program.count("]"):
+                raise BracketMismatch(self.program.index("["), "[")
+            else:
+                raise BracketMismatch(self.program.rindex("]"), "]")
+
         while self.position < self.program_len:
             current = self.program[self.position]
 
             if current == "+":
-                self.collapse_instruction(current, InsType.INCREMENT)
+                self.collapse_instruction(current, InstructionType.Arithmetic)
             elif current == "-":
-                self.collapse_instruction(current, InsType.DECREMENT)
+                self.collapse_instruction(
+                    current, InstructionType.Arithmetic, negative=True
+                )
             elif current == "<":
-                self.collapse_instruction(current, InsType.MLEFT)
+                self.collapse_instruction(
+                    current, InstructionType.Pointer, negative=True
+                )
             elif current == ">":
-                self.collapse_instruction(current, InsType.MRIGHT)
+                self.collapse_instruction(current, InstructionType.Pointer)
             elif current == ".":
-                self.collapse_instruction(current, InsType.WRITE)
+                self.collapse_instruction(current, InstructionType.Write)
             elif current == ",":
-                self.collapse_instruction(current, InsType.READ)
+                self.collapse_instruction(current, InstructionType.Read)
             elif current == "[":
-                ins_pos = self.new_instruction(InsType.JUMP_IF_ZERO, 0)
-                self.stack.append(ins_pos)
+                # Emit instruction with a bogus value.
+                # Patch it after compilation of multiply loops.
+                self.new_instruction(InstructionType.JumpRight, 0)
             elif current == "]":
-                if not self.stack:
-                    raise BracketMismatch(self.position, "]")
-                open_ins = self.stack[-1]
-                self.stack.pop()
-                close_ins = self.new_instruction(InsType.JUMP_UNLESS_ZERO, open_ins)
-                self.instructions[open_ins].value = close_ins
+                self.new_instruction(InstructionType.JumpLeft, 0)
             elif current == "Z":
-                self.new_instruction(InsType.CLEAR_LOOP, 1)
+                self.new_instruction(InstructionType.Clear, 0)
             elif current == "R":
-                self.new_instruction(InsType.SCAN_LOOP_R, 1)
+                self.new_instruction(InstructionType.ScanRight, 0)
             elif current == "L":
-                self.new_instruction(InsType.SCAN_LOOP_L, 1)
+                self.new_instruction(InstructionType.ScanLeft, 0)
 
             self.position += 1
 
-        if self.stack:
-            raise BracketMismatch(self.stack.pop(), "[")
-
-        # Compile loops and return the compiled list.
+        # Compile loops and match brackets.
         self.compile_multiply_loops()
-        self.match_braces()
+        self.match_brackets()
+
         return self.instructions
 
-    def collapse_instruction(self, char: str, tp: InsType) -> None:
+    def collapse_instruction(
+        self, char: str, tp: InstructionType, **args: bool
+    ) -> None:
         """Collapse repeated operations into a single instruction."""
+
         count = 1
         while (
             self.position < self.program_len - 1
@@ -102,11 +109,16 @@ class Compiler:
             count += 1
             self.position += 1
 
-        self.new_instruction(tp, count)
+        self.new_instruction(tp, count, **args)
 
-    def new_instruction(self, tp: InsType, value: int) -> int:
+    def new_instruction(self, tp: InstructionType, value: int, **args: bool) -> int:
         """Append a new instruction to the instruction list."""
-        ins = Instruction(tp, value)
+
+        if args.get("negative", False):
+            ins = Instruction(tp, -value)
+        else:
+            ins = Instruction(tp, value)
+
         self.instructions.append(ins)
         return len(self.instructions) - 1
 
@@ -114,15 +126,18 @@ class Compiler:
     def compile_multiply_loops(self):
         """Compile Multiply Loops"""
 
+        allowed_set = set((InstructionType.Arithmetic, InstructionType.Pointer,))
+        empty_set = set()
+
         # Copy the list.
-        ir = self.instructions[:]
+        ir: typing.List[Instruction] = self.instructions[:]
 
         i = 0
         while True:
 
             # Find a loop, that doesn't contain any other loop.
             while i < len(ir):
-                if ir[i].tp == InsType.JUMP_IF_ZERO:
+                if ir[i].tp == InstructionType.JumpRight:
                     break
 
                 i += 1
@@ -131,10 +146,10 @@ class Compiler:
 
             j = i + 1
             while j < len(ir):
-                if ir[j].tp == InsType.JUMP_UNLESS_ZERO:
+                if ir[j].tp == InstructionType.JumpLeft:
                     break
 
-                if ir[j].tp == InsType.JUMP_IF_ZERO:
+                if ir[j].tp == InstructionType.JumpRight:
                     i = j
 
                 j += 1
@@ -142,32 +157,19 @@ class Compiler:
                 break
 
             # Check if the loop only contains +, -, <, > operations.
-            if (
-                set(op.tp for op in ir[i + 1 : j])
-                - set(
-                    [
-                        InsType.INCREMENT,
-                        InsType.DECREMENT,
-                        InsType.MLEFT,
-                        InsType.MRIGHT,
-                    ]
-                )
-                != set()
-            ):
+            if set(op.tp for op in ir[i + 1 : j]) - allowed_set != empty_set:
                 i = j
                 continue
 
             # Interpret the loop and track pointer position.
-            mem, p = {}, 0
+            mem: typing.Dict[int, int] = {}
+            p = 0
+
             for op in ir[i + 1 : j]:
-                if op.tp == InsType.INCREMENT:
+                if op.tp == InstructionType.Arithmetic:
                     mem[p] = mem.get(p, 0) + op.value
-                elif op.tp == InsType.DECREMENT:
-                    mem[p] = mem.get(p, 0) - op.value
-                elif op.tp == InsType.MRIGHT:
+                elif op.tp == InstructionType.Pointer:
                     p += op.value
-                elif op.tp == InsType.MLEFT:
-                    p -= op.value
 
             # If pointer is at the starting position, and only 1
             # is subtracted from Cell 0 then this is a multiply/copy loop.
@@ -177,28 +179,31 @@ class Compiler:
 
             mem.pop(0)
 
-            instblock = [Instruction(InsType.MULT_LOOP, mem[p], offset=p) for p in mem]
-            ir = ir[:i] + instblock + [Instruction(InsType.CLEAR_LOOP, 1)] + ir[j + 1 :]
+            instblock = [
+                Instruction(InstructionType.Multiply, mem[p], offset=p) for p in mem
+            ]
+            ir = (
+                ir[:i]
+                + instblock
+                + [Instruction(InstructionType.Clear, 0)]
+                + ir[j + 1 :]
+            )
 
         self.instructions = ir
 
-    def match_braces(self) -> None:
-        """This has to be done once again since we destroyed the earlier scheme."""
+    def match_brackets(self) -> None:
+        """Match brackets in the compiled instructions."""
 
         stack = []
 
         for pos, op in enumerate(self.instructions):
-            if op.tp == InsType.JUMP_IF_ZERO:
+            if op.tp == InstructionType.JumpRight:
                 stack.append(pos)
-            elif op.tp == InsType.JUMP_UNLESS_ZERO:
-                inst_pos = stack.pop()
+            elif op.tp == InstructionType.JumpLeft:
+                right_pos = stack.pop()
 
                 # Patch the Open Inst with Close pos.
-                inst = self.instructions[inst_pos]
-                inst.value = pos
-                self.instructions[inst_pos] = inst
+                self.instructions[right_pos].value = pos
 
                 # Patch the Close Inst with Open pos.
-                inst = self.instructions[pos]
-                inst.value = inst_pos
-                self.instructions[pos] = inst
+                self.instructions[pos].value = right_pos

@@ -2,7 +2,7 @@ import time
 import typing
 
 from bfexec.errors import BFRuntimeException
-from bfexec.instructions import InsType
+from bfexec.instructions import Instruction, InstructionType
 
 
 __all__ = ["BFInterpreter"]
@@ -23,12 +23,17 @@ class BFInterpreter:
     """
 
     def __init__(
-        self, program: list, stdin: typing.TextIO, stdout: typing.TextIO
+        self,
+        program: typing.List[Instruction],
+        stdin: typing.TextIO,
+        stdout: typing.TextIO,
     ) -> None:
         self.program = program
+        self.program_length = len(program)
+
         self.cells = bytearray(30000)
-        self.ip = 0
-        self.dp = 0
+        self.ip: int = 0
+        self.dp: int = 0
 
         self.stdin = stdin
         self.stdout = stdout
@@ -52,58 +57,52 @@ class BFInterpreter:
 
         start = time.perf_counter()
 
-        while self.ip < len(self.program):
+        while self.ip < self.program_length:
             instruction = self.program[self.ip]
 
-            if instruction.tp == InsType.INCREMENT:
-                val = self.cells[self.dp]
-                self.cells[self.dp] = ((val & 0xFF) + instruction.value) % 0x100
-            elif instruction.tp == InsType.DECREMENT:
-                val = self.cells[self.dp]
+            if instruction.tp == InstructionType.Arithmetic:
                 self.cells[self.dp] = (
-                    ((val & 0xFF) - instruction.value) % 0x100 + 0x100
+                    ((self.cells[self.dp] & 0xFF) + instruction.value) % 0x100 + 0x100
                 ) % 0x100
-            elif instruction.tp == InsType.MLEFT:
-                if self.dp - instruction.value < 0:
-                    raise BFRuntimeException("[]index out of range")
-                self.dp -= instruction.value
-            elif instruction.tp == InsType.MRIGHT:
-                if self.dp + instruction.value > 29999:
-                    raise BFRuntimeException("[]index out of range")
+            elif instruction.tp == InstructionType.Pointer:
                 self.dp += instruction.value
-            elif instruction.tp == InsType.WRITE:
+            elif instruction.tp == InstructionType.Write:
                 val = self.cells[self.dp]
                 for _ in range(instruction.value):
                     self.stdout.write(chr(int(val)))
-            elif instruction.tp == InsType.READ:
+            elif instruction.tp == InstructionType.Read:
                 for _ in range(instruction.value):
                     val = str(self.stdin.read(1))
                     if len(val) < 1 or ord(val) == 0:
                         self.cells[self.dp] = 0
                     else:
                         self.cells[self.dp] = ord(val)
-            elif instruction.tp == InsType.JUMP_IF_ZERO:
+            elif instruction.tp == InstructionType.JumpRight:
                 if self.cells[self.dp] == 0:
                     self.ip = instruction.value
-            elif instruction.tp == InsType.JUMP_UNLESS_ZERO:
+            elif instruction.tp == InstructionType.JumpLeft:
                 if self.cells[self.dp] != 0:
                     self.ip = instruction.value
-            elif instruction.tp == InsType.CLEAR_LOOP:
+            elif instruction.tp == InstructionType.Clear:
                 self.cells[self.dp] = 0
-            elif instruction.tp == InsType.SCAN_LOOP_L:
+            elif instruction.tp == InstructionType.ScanLeft:
                 index = self.cells.rfind(0, 0, self.dp + 1)
+
                 if index == -1:
                     raise BFRuntimeException("[]index out of range")
+
                 self.dp = index
-            elif instruction.tp == InsType.SCAN_LOOP_R:
+            elif instruction.tp == InstructionType.ScanRight:
                 index = self.cells.find(0, self.dp, 30000)
+
                 if index == -1:
                     raise BFRuntimeException("[]index out of range")
+
                 self.dp = index
-            elif instruction.tp == InsType.MULT_LOOP:
-                val = self.cells[self.dp + instruction.offset]
+            elif instruction.tp == InstructionType.Multiply:
                 self.cells[self.dp + instruction.offset] = (
-                    (val & 0xFF) + (self.cells[self.dp] * instruction.value)
+                    (self.cells[self.dp + instruction.offset] & 0xFF)
+                    + (self.cells[self.dp] * instruction.value)
                 ) % 0x100
 
             self.ip += 1

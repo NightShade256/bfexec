@@ -7,14 +7,16 @@ from bfexec import BFInterpreter, Compiler
 def main() -> None:
 
     # Create CLI argument parser.
-    parser = argparse.ArgumentParser("Execute BF code.")
-    parser.add_argument("file", metavar="file", type=str, help="Path to the BF file.")
+    parser = argparse.ArgumentParser("Execute BrainFuck code.")
+    parser.add_argument(
+        "file", metavar="file", type=str, help="Path to the BrainFuck file."
+    )
 
     args = parser.parse_args()
 
     # Check if the file is actually a BF file.
     if not args.file.endswith((".b", ".bf")):
-        return print("Unrecognized file extension. Only use .b and .bf files.")
+        return print("Unrecognized file extension. Please use .b and .bf files.")
 
     # Try to open the file and run.
     try:
