@@ -63,8 +63,3 @@ I have added few of my own modifications that seek to make the interpreter bette
 ## License
 
 This project is licensed under MIT license.
-
-## Support
-
-Please feel free to contact me on Discord, if you have any query regarding bfexec.
-Username: `__NightShade256__#5169`
